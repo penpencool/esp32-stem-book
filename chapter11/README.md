@@ -287,7 +287,7 @@ void loop() {
 
 #### 🤔 หลักการทำงาน
 
-เมื่อดินแห้น (ความชื้นต่ำ) → ESP32 สั่ง Relay ให้ทำงาน → ปั๊มน้ำเปิด → รดน้ำ → รอ 5 วินาที → ปั๊มน้ำปิด
+เมื่อดินแห้ง (ความชื้นต่ำ) → ESP32 สั่ง Relay ให้ทำงาน → ปั๊มน้ำเปิด → รดน้ำ → รอ 5 วินาที → ปั๊มน้ำปิด
 
 **วงจร:**
 
@@ -812,6 +812,7 @@ void readSensors() {
 
 ```cpp
 #define SOIL_VERY_DRY   20   // ความชื้นต่ำมาก
+#define PUMP_TIME_LONG   8000 // รดน้ำ 8 วินาที (ถ้าดินแห้งมาก)
 
 void checkAndAct() {
   if (soilMoisture < SOIL_DRY_THRESHOLD && !pumpRunning) {
@@ -822,8 +823,10 @@ void checkAndAct() {
     
     // ถ้าดินแห้งมาก → รดน้ำนานขึ้น
     if (soilMoisture < SOIL_VERY_DRY) {
-      pumpStartTime -= 3000;  // ลดเวลาเริ่มลง = รดน้ำนานขึ้น 3 วินาที
       Serial.println("💧💧 ดินแห้งมาก! รดน้ำนานขึ้น!");
+      // รดน้ำนานขึ้น 3 วินาที โดยลดค่าเริ่มต้นของ pumpStartTime
+      // ทำให้ millis() - pumpStartTime มีค่ามากขึ้นเร็ว → ปิดปั๊มช้าลง
+      pumpStartTime -= (PUMP_TIME_LONG - PUMP_TIME_NORMAL);
     }
   }
 }

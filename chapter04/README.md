@@ -186,7 +186,7 @@ ch04_blink_animation/
 // ch04_blink_animation - PlatformIO Blink with Animation
 // ESP32-C3 STEM AI Coding
 
-#define LED_PIN 8  // LED_BUILTIN ของ ESP32-C3 อยู่ที่ GPIO 8
+#define LED_PIN 8  // LED บิลด์อินของ ESP32-C3 DevKitM-1 อยู่ที่ GPIO 8
 
 void setup() {
   Serial.begin(115200);          // เริ่มใช้ Serial Monitor
@@ -481,6 +481,9 @@ void animRunningLight(int repeatCount) {
 void setup() {
   Serial.begin(115200);
   delay(1000);  // รอให้ Serial พร้อม
+
+  // เริ่มต้นค่าสุ่ม (สำคัญสำหรับ ESP32!)
+  randomSeed(analogRead(0));
 
   Serial.println("=================================");
   Serial.println("  ESP32-C3 LED Animation Demo");
@@ -877,6 +880,9 @@ void animRandomTwinkle(int times) {
   }
   rgbOff();
 }
+
+// หมายเหตุ: ควรเรียก randomSeed(analogRead(0)) ใน setup() ก่อนใช้ random()
+// ถ้าไม่มี randomSeed() ลำดับการสุ่มจะเป็นค่าเดิมทุกครั้งที่ reset
 ```
 
 **ไฟล์ `src/main.cpp`:**

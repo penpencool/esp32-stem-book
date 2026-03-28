@@ -303,14 +303,16 @@ OLED I2C Circuit:
 
 ```
 ESP32-C3                    LDR + OLED
-━━━━━━━━━━━                ━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 3.3V   ──────────────────── OLED VCC
 GND    ──────────────────── OLED GND
         ──────────────────── LDR → 10KΩ → GND
-GPIO 0 (ADC) ──────────────── LDR Junction
-GPIO 1 (SDA) ──────────────── OLED SDA
-GPIO 2 (SCL) ──────────────── OLED SCL
+GPIO 2 (ADC) ──────────────── LDR Junction
+GPIO 0 (SDA) ──────────────── OLED SDA
+GPIO 1 (SCL) ──────────────── OLED SCL
 ```
+
+> ⚠️ **หมายเหตุด้าน GPIO:** บน ESP32-C3 มี GPIO บางตัวที่ใช้สำหรับ SPI Flash ภายใน (GPIO 6-11) และ GPIO 0 (BOOT button) ควรหลีกเลี่ยงใช้ GPIO เหล่านี้สำหรับ I/O ทั่วไป! บทนี้ใช้ GPIO 0 (SDA), GPIO 1 (SCL), GPIO 2 (ADC) ซึ่งปลอดภัยบน ESP32-C3 ทั่วไป
 
 > ⚠️ **คำเตือน:** 
 > 1. OLED ต้องต่อไฟ 3.3V หรือ 5V (ดูที่ตัวจอ) ถ้าต่อผิดอาจเสียหาย!

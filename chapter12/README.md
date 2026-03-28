@@ -105,6 +105,8 @@
 #include <Adafruit_SSD1306.h>
 #include <SPI.h>
 #include <MFRC522.h>  // Library สำหรับ RFID
+// ติดตั้งผ่าน platformio.ini:
+// lib_deps = miguelbalboa/rfid@^1.4.9
 
 // ===== Wi-Fi =====
 const char* ssid = "ชื่อWiFiของคุณ";
@@ -121,16 +123,21 @@ const char* LINE_TOKEN = "YOUR_LINE_NOTIFY_TOKEN";
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // ===== Pin Setup =====
-#define PIR_PIN       10   // PIR Sensor
-#define BUZZER_PIN    4    // เสียงเตือน
-#define LED_RED       3    // LED แดง (เตือนภัย)
-#define LED_GREEN     5    // LED เขียว (ปกติ)
-#define BTN_ARM       6    // ปุ่มเปิดระบบ
-#define BTN_DISARM    7    // ปุ่มปิดระบบ
+// ⚠️ หมายเหตุ: GPIO 6-11 บน ESP32-C3 ใช้สำหรับ SPI Flash ภายใน
+// ควรหลีกเลี่ยงใช้ GPIO เหล่านี้
+// ปัจจุบันใช้ RFID บน GPIO 6-7 (SPI bit-bang) ซึ่งแยกจาก SPI Flash
+#define PIR_PIN        4   // PIR Sensor ← ✅ ย้ายจาก GPIO 9 (อยู่ใน Flash range)
+#define BUZZER_PIN     19   // เสียงเตือน ← ✅ ย้ายจาก GPIO 4
+#define LED_RED        5   // LED แดง (เตือนภัย) ← ✅ ใช้ GPIO 5
+#define LED_GREEN      3   // LED เขียว (ปกติ) ← ⚠️ GPIO 3 = RX (ระวัง Serial Monitor)
+#define BTN_ARM        2   // ปุ่มเปิดระบบ ← ✅ ปลอดภัย
+#define BTN_DISARM     18   // ปุ่มปิดระบบ ← ✅ ใช้ GPIO 18
 
 // ===== RFID =====
-#define RST_PIN       9
-#define SS_PIN        8
+// ⚠️ หมายเหตุ: บน ESP32-C3 SPI hardware pins คือ MOSI=7, MISO=6, SCK=5
+// แต่ใช้ SPI software (bit-bang) ผ่าน MFRC522 บน GPIO 6-7 ซึ่งแยกจาก SPI Flash
+#define RST_PIN       21   // ขา RST ของ RFID ← ✅ GPIO 21 (ไม่ใช่ GPIO 0 = BOOT button!)
+#define SS_PIN         20   // ขา SDA ของ RFID ← ⚠️ เปลี่ยนจาก GPIO 9 (อยู่ใน Flash range)
 MFRC522 rfid(SS_PIN, RST_PIN);
 
 // การ์ดที่ได้รับอนุญาต (ใส่ UID ของการ์ดคุณ)
@@ -358,35 +365,46 @@ void beep(int times) {
 
 ### 📋 วงจรระบบรักษาความปลอดภัย
 
+> ⚠️ **หมายเหตุด้าน Pin:** ESP32-C3 มี GPIO บางตัวที่ใช้สำหรับ SPI Flash ภายใน (GPIO 6-11) และ BOOT button (GPIO 0) ควรหลีกเลี่ยงการใช้ GPIO เหล่านี้
+
 ```
 ESP32-C3          PIR Sensor
 ────────          ──────────
 3V3           ──► VCC
-GPIO 10      ──► OUT
+GPIO 4        ──► OUT       ← ✅ เปลี่ยนจาก GPIO 9 (อยู่ใน Flash range)
 GND           ──► GND
 
 ESP32-C3          Buzzer
 ────────          ──────
-GPIO 4        ──► (+)
+GPIO 19       ──► (+)       ← เปลี่ยนจาก GPIO 4
 GND           ──► (-)
 
 ESP32-C3          LED
 ────────          ──
-GPIO 3        ──► LED แดง (+)
+GPIO 5        ──► LED แดง (+)  ← ✅ GPIO 5 (ปลอดภัย)
 GND           ──► LED แดง (-)
 
-GPIO 5        ──► LED เขียว (+)
+GPIO 3        ──► LED เขียว (+)  ← ⚠️ GPIO 3 = RX (ระวัง Serial Monitor)
 GND           ──► LED เขียว (-)
+
+ESP32-C3          ปุ่มกด
+────────          ───────
+GPIO 2        ──► BTN_ARM (+)
+GND           ──► BTN_ARM (-)
+
+GPIO 18       ──► BTN_DISARM (+)
+GND           ──► BTN_DISARM (-)
 
 ESP32-C3          RFID RC522
 ────────          ───────────
 3V3           ──► VCC
 GND           ──► GND
-GPIO 5 (MOSI) ──► MOSI
-GPIO 4 (MISO) ──► MISO
-GPIO 6 (SCK)  ──► SCK
-GPIO 8        ──► SDA (SS)
-GPIO 9        ──► RST
+// RFID ใช้ SPI hardware pins มาตรฐานของ ESP32:
+GPIO 23       ──► MOSI (COPI)
+GPIO 19       ──► MISO (CIPO)
+GPIO 18       ──► SCK
+GPIO 20       ──► SDA (SS)  ← เปลี่ยนจาก GPIO 9
+GPIO 21       ──► RST
 ```
 
 ---
@@ -425,9 +443,15 @@ HC-SR04 ส่งคลื่นเสียง (Ultrasonic)
     คลื่นสะท้อนกลับมา
           ↓
     วัดเวลาที่ใช้ = คำนวณระยะทาง
-    
-สูตร: ระยะทาง = (เวลา × เสียงในอากาศ) / 2
-     ระยะทาง ≈ เวลา(μs) × 0.034 / 2 (cm)
+
+⚠️ **หมายเหตุ:** HC-SR04 Echo pin ส่งสัญญาณ 5V → ต้องใช้ Voltage Divider
+(Vout = Vin × 2kΩ / (1kΩ + 2kΩ) ≈ 3.3V) ก่อนต่อเข้า ESP32-C3
+ดูรายละเอียดเพิ่มเติมในบทที่ 9
+
+วงจร HC-SR04:
+ESP32 GPIO12 ──► HC-SR04 TRIG
+ESP32 GPIO13 ◄──┤1kΩ├──┬──► HC-SR04 ECHO
+                    └──┤2kΩ├──► GND
 ```
 
 ### 🔧 วงจร Motor Driver
@@ -436,11 +460,12 @@ HC-SR04 ส่งคลื่นเสียง (Ultrasonic)
 ESP32-C3          L298N
 ────────          ─────
 GPIO 2        ──► IN1 (มอเตอร์ซ้าย)
-GPIO 3        ──► IN2 (มอเตอร์ซ้าย)
+GPIO 18       ──► IN2 (มอเตอร์ซ้าย) ← ⚠️ เปลี่ยนจาก GPIO 3
 GPIO 4        ──► IN3 (มอเตอร์ขวา)
 GPIO 5        ──► IN4 (มอเตอร์ขวา)
 3V3           ──► ENA, ENB (เสียบ Jumper)
 GND           ──► GND
+```
 
 L298N          มอเตอร์
 ─────          ──────
@@ -470,17 +495,19 @@ OUT4       ──► มอเตอร์ขวา -
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_ADDR);
 
 // ===== Ultrasonic Sensor =====
-#define TRIG_PIN    10
-#define ECHO_PIN    11
+// ⚠️ หลีกเลี่ยง GPIO 6-11 (SPI Flash), GPIO 0 (BOOT), GPIO 1 (TX), GPIO 3 (RX)
+#define TRIG_PIN    12   // HC-SR04 Trig ← ✅ ใช้ GPIO 12 (Safe)
+#define ECHO_PIN    13   // HC-SR04 Echo ← ✅ ใช้ GPIO 13 (Safe)
 
 // ===== Motor Pins =====
-#define MOTOR_L1    2    // มอเตอร์ซ้าย ขา 1
-#define MOTOR_L2    3    // มอเตอร์ซ้าย ขา 2
-#define MOTOR_R1    4    // มอเตอร์ขวา ขา 1
-#define MOTOR_R2    5    // มอเตอร์ขวา ขา 2
+// ⚠️ GPIO 3 = RX (Serial) อาจขัดกับ Serial Monitor
+#define MOTOR_L1    2    // มอเตอร์ซ้าย ขา 1 ← ✅ ปลอดภัย
+#define MOTOR_L2    18   // มอเตอร์ซ้าย ขา 2 ← ✅ เปลี่ยนจาก GPIO 3
+#define MOTOR_R1    4    // มอเตอร์ขวา ขา 1 ← ✅ ปลอดภัย
+#define MOTOR_R2    5    // มอเตอร์ขวา ขา 2 ← ✅ ปลอดภัย
 
 // ===== ค่าคงที่ =====
-#define SAFE_DISTANCE  20   // ระยะปล全全全 (cm)
+#define SAFE_DISTANCE  20   // ระยะห่างปลอดภัย (cm)
 #define TURN_SPEED      200  // ความเร็วเลี้ยว (ms)
 #define BACK_SPEED      300  // ความเร็วถอย (ms)
 
@@ -643,7 +670,7 @@ void avoidObstacle() {
   delay(500);
 }
 
-// ===== ฟังก์ชัน: แสดง OLED =====
+// ===== ฟังก์ชัน: แสดง OLED (2 บรรทัด) =====
 void showOLED(String line1, String line2) {
   display.clearDisplay();
   display.setTextSize(2);
@@ -653,6 +680,21 @@ void showOLED(String line1, String line2) {
   display.setCursor(0, 45);
   display.setTextSize(1);
   display.println(line2);
+  display.display();
+}
+
+// ===== ฟังก์ชัน: แสดง OLED (3 บรรทัด) =====
+void showOLED(String line1, String line2, String line3) {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 10);
+  display.println(line1);
+  display.setCursor(0, 32);
+  display.setTextSize(1);
+  display.println(line2);
+  display.setCursor(0, 50);
+  display.println(line3);
   display.display();
 }
 ```
@@ -723,8 +765,9 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_ADDR);
 Adafruit_BME280 bme;
 
 // ===== Pin =====
-#define LED_PIN    3    // LED แสดงส่งข้อมูลสำเร็จ
-#define MQ135_PIN  6    // ADC วัดคุณภาพอากาศ
+// ⚠️ หลีกเลี่ยง GPIO 6-11 (SPI Flash) และ ADC2 กับ WiFi
+#define LED_PIN    2    // LED แสดงส่งข้อมูลสำเร็จ ← ✅ เปลี่ยนจาก GPIO 3
+#define MQ135_PIN  4    // ADC วัดคุณภาพอากาศ ← ⚠️ เปลี่ยนจาก GPIO 6 (ADC2 ไม่ทำงานกับ WiFi)
 
 // ===== ตัวแปร =====
 unsigned long lastUpdate = 0;
@@ -979,8 +1022,8 @@ void showOLED(String line1, String line2, String line3) {
 ```
 "ช่วยเขียนโค้ด ESP32-C3 หุ่นยนต์หลบสิ่งกีดขวางหน่อย
  มี:
- - HC-SR04 Ultrasonic Sensor (TRIG=GPIO10, ECHO=GPIO11)
- - L298N Motor Driver (IN1=2, IN2=3, IN3=4, IN4=5)
+ - HC-SR04 Ultrasonic Sensor (TRIG=GPIO12, ECHO=GPIO13)
+ - L298N Motor Driver (IN1=2, IN2=18, IN3=4, IN4=5)
  - OLED I2C
 
  เงื่อนไข:
@@ -1177,7 +1220,7 @@ void showOLED(String line1, String line2, String line3) {
 
 ### แบบฝึกที่ 1: ปรับปรุงระบบรักษาความปลอดภัย
 เพิ่มฟีเจอร์ให้ระบบรักษาความปลอดภัย:
-- [ ] ถ่ายรูปเมื่อตรวจจับเ� двиหิวเมื่อเปิดกล้อง (ถ้ามี)
+- [ ] ถ่ายรูปเมื่อตรวจจับการเคลื่อนไหว (ถ้ามีกล้อง)
 - [ ] ส่ง Email แจ้งเตือน (ใช้ IFTTT หรือ SMTP)
 - [ ] เพิ่มรหัสผ่าน 4 หลัก (ใช้ Keypad 3x4)
 

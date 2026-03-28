@@ -212,7 +212,10 @@ HC-SR04 มี 4 ขา:
                                   └──► GND
 
     สูตร: Vout = Vin × (R2 / (R1 + R2)) = 5V × (2000/3000) ≈ 3.3V ✅
+    (ESP32-C3 รับ HIGH ที่ > 2.5V ดังนั้น 3.3V ถือว่าปลอดภัย)
 ```
+
+> ⚠️ **หมายเหตุ:** ค่า R1=1kΩ, R2=2kΩ ให้ Vout = 3.33V ซึ่งเกิน 3.3V เล็กน้อย หากต้องการค่าที่ใกล้เคียง 3.3V มากขึ้น แนะนำ **R1=1kΩ, R2=2.2kΩ** (ได้ Vout ≈ 3.44V) หรือ **R1=1.5kΩ, R2=3kΩ** (ได้ Vout ≈ 3.33V ที่แม่นยำกว่า)
 
 **วิธีที่ 2: ใช้ Logic Level Converter (TTL Converter)**
 
@@ -266,8 +269,8 @@ HC-SR04 มี 4 ขา:
     ┌─────────┐              ┌──────────┐
     │      GND├──────────────│○ GND     │
     │  3V3   ├──────────────│○ VCC     │
-    │  GPIO6 ├──────────────│○ SCL     │
-    │  GPIO7 ├──────────────│○ SDA     │
+    │  GPIO1 ├──────────────│○ SCL     │ ← ⚠️ เปลี่ยนจาก GPIO 6
+    │  GPIO0 ├──────────────│○ SDA     │ ← ⚠️ เปลี่ยนจาก GPIO 7
     └─────────┘              └──────────┘
 
     Voltage Divider สำหรับ Echo:
@@ -281,8 +284,8 @@ HC-SR04 มี 4 ขา:
 |------|---------|
 | VCC | 3V3 |
 | GND | GND |
-| SCL | GPIO 6 |
-| SDA | GPIO 7 |
+| SCL | GPIO 1 ← ⚠️ เปลี่ยนจาก GPIO 6 (อยู่ใกล้ SPI Flash) |
+| SDA | GPIO 0 ← ⚠️ เปลี่ยนจาก GPIO 7 (อยู่ใกล้ SPI Flash) |
 
 > 💡 **เคล็ดลับ:** I2C สามารถต่ออุปกรณ์หลายตัวที่ใช้ I2C พร้อมกันได้ เพราะแต่ละตัวมี Address ต่างกัน
 
@@ -332,7 +335,7 @@ void setup() {
   pinMode(ECHO_PIN, INPUT);    // Echo = Input
 
   // เริ่ม OLED
-  Wire.begin(7, 6);  // SDA=GPIO7, SCL=GPIO6
+  Wire.begin(0, 1);  // SDA=GPIO0, SCL=GPIO1 ← ⚠️ เปลี่ยนจาก GPIO 6-7 (อยู่ใกล้ SPI Flash)
 
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println("OLED ไม่พบ!");
@@ -435,10 +438,10 @@ void loop() {
     └─────────┘              └──────────┘
 
     LED (ผ่าน R 220Ω แต่ละตัว):
-    GPIO 6 ──── R220Ω ──── LED เขียว ──── GND
-    GPIO 7 ──── R220Ω ──── LED เหลือง ──── GND
-    GPIO 8 ──── R220Ω ──── LED ส้ม/แดง2 ── GND
-    GPIO 9 ──── R220Ω ──── LED แดง ──── GND
+    GPIO 18 ──── R220Ω ──── LED เขียว ──── GND
+    GPIO 19 ──── R220Ω ──── LED เหลือง ──── GND
+    GPIO 2  ──── R220Ω ──── LED ส้ม ──── GND
+    GPIO 3  ──── R220Ω ──── LED แดง ──── GND
 
     Buzzer (Active):
     GPIO 21 ──────────────► (+) Buzzer (-) ──── GND
@@ -471,11 +474,13 @@ void loop() {
 #define TRIG_PIN   4   // HC-SR04 Trig
 #define ECHO_PIN   5   // HC-SR04 Echo
 
-#define LED_GREEN  6   // LED เขียว (ปลอดภัย)
-#define LED_YELLOW 7   // LED เหลือง (เตือน)
-#define LED_ORANGE 8   // LED ส้ม (ใกล้)
-#define LED_RED    9   // LED แดง (อันตราย)
-#define BUZZER_PIN 21  // Buzzer
+// ⚠️ หมายเหตุ: GPIO 6-11 บน ESP32-C3 อยู่ใกล้ SPI Flash ภายใน
+// ควรเลี่ยงใช้ GPIO เหล่านั้น ใช้ GPIO ที่ปลอดภัยกว่า เช่น GPIO 2, 3, 4, 5, 18, 19, 20, 21
+#define LED_GREEN  18   // LED เขียว (ปลอดภัย)
+#define LED_YELLOW 19   // LED เหลือง (เตือน)
+#define LED_ORANGE 2    // LED ส้ม (ใกล้)
+#define LED_RED    3    // LED แดง (อันตราย)
+#define BUZZER_PIN 21  // Buzzer ← ✅ ปลอดภัย
 
 // ==== ค่าตั้งต้น ====
 #define SAFE_DISTANCE   100.0  // ระยะปลอดภัย (cm)
