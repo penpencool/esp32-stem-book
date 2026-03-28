@@ -491,15 +491,17 @@ Hard resetting via RTS pin...
 
 ```cpp
 // โค้ดนี้มี Error! ลองหาดูสิ
+#define LED_PIN 8  // LED บิลต์อินของ ESP32 C3 Super Mini อยู่ที่ GPIO 8
+
 void setup() {
   Serial.begin(115200)
   Serial.println("Hello!");
 }
 
 void loop() {
-  digitlWrite(LED_BUILTIN, HIGH);  // พิมพ์ผิด!
+  digitlWrite(LED_PIN, HIGH);  // พิมพ์ผิด!
   delay(1000)
-  digitlWrite(LED_BUILTIN, LOW);   // พิมพ์ผิดอีก!
+  digitlWrite(LED_PIN, LOW);   // พิมพ์ผิดอีก!
 }
 ```
 

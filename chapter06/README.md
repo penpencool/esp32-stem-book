@@ -293,8 +293,8 @@ LDR Circuit:
 OLED I2C Circuit:
        ESP32-C3          OLED 0.96" I2C
        ━━━━━━━━━          ━━━━━━━━━━━━━━
-       GPIO 0 (SDA) ──── SDA
-       GPIO 1 (SCL) ──── SCL
+       GPIO 8 (SDA) ──── SDA
+       GPIO 9 (SCL) ──── SCL
        3.3V          ──── VCC
        GND           ──── GND
 ```
@@ -308,11 +308,11 @@ ESP32-C3                    LDR + OLED
 GND    ──────────────────── OLED GND
         ──────────────────── LDR → 10KΩ → GND
 GPIO 2 (ADC) ──────────────── LDR Junction
-GPIO 0 (SDA) ──────────────── OLED SDA
-GPIO 1 (SCL) ──────────────── OLED SCL
+GPIO 8 (SDA) ──────────────── OLED SDA
+GPIO 9 (SCL) ──────────────── OLED SCL
 ```
 
-> ⚠️ **หมายเหตุด้าน GPIO:** บน ESP32-C3 มี GPIO บางตัวที่ใช้สำหรับ SPI Flash ภายใน (GPIO 6-11) และ GPIO 0 (BOOT button) ควรหลีกเลี่ยงใช้ GPIO เหล่านี้สำหรับ I/O ทั่วไป! บทนี้ใช้ GPIO 0 (SDA), GPIO 1 (SCL), GPIO 2 (ADC) ซึ่งปลอดภัยบน ESP32-C3 ทั่วไป
+> ⚠️ **หมายเหตุด้าน GPIO:** บน ESP32-C3 มี GPIO บางตัวที่ใช้สำหรับ SPI Flash ภายใน (GPIO 6-11) และ GPIO 9 (BOOT button) ควรหลีกเลี่ยงใช้ GPIO เหล่านี้สำหรับ I/O ทั่วไป! บทนี้ใช้ GPIO 8 (SDA), GPIO 9 (SCL), GPIO 2 (ADC) ซึ่งปลอดภัยบน ESP32-C3 ทั่วไป
 
 > ⚠️ **คำเตือน:** 
 > 1. OLED ต้องต่อไฟ 3.3V หรือ 5V (ดูที่ตัวจอ) ถ้าต่อผิดอาจเสียหาย!
@@ -358,9 +358,9 @@ lib_deps =
 #define SCREEN_WIDTH  128
 #define SCREEN_HEIGHT  64
 
-// กำหนดขา I2C
-#define OLED_SDA  0    // GPIO 0
-#define OLED_SCL  1    // GPIO 1
+// กำหนดขา I2C (ESP32 C3 Super Mini: SDA=GPIO8, SCL=GPIO9)
+#define OLED_SDA  8    // GPIO 8 (SDA)
+#define OLED_SCL  9    // GPIO 9 (SCL)
 
 // ฟังก์ชันสำหรับ UI ต่างๆ
 void uiInit();                                          // เริ่มใช้งานจอ OLED
@@ -719,8 +719,8 @@ void loop() {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 3.3V ──── VCC (OLED)
 GND  ──── GND (OLED)
-GPIO 0 ──── SDA (OLED)
-GPIO 1 ──── SCL (OLED)
+GPIO 8 ──── SDA (OLED)
+GPIO 9 ──── SCL (OLED)
 
 วงจรที่ 3: Status LED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -195,13 +195,13 @@ void setup() {
 }
 
 void loop() {
-  // สั่งให้ LED ติด
-  digitalWrite(LED_PIN, HIGH);
+  // สั่งให้ LED ติด (LED บน C3 Super Mini เป็น Active LOW — ต้องเขียน LOW ถึงจะติด)
+  digitalWrite(LED_PIN, LOW);
   Serial.println("LED ON 🔆");
   delay(500);
 
   // สั่งให้ LED ดับ
-  digitalWrite(LED_PIN, LOW);
+  digitalWrite(LED_PIN, HIGH);
   Serial.println("LED OFF 💤");
   delay(500);
 }
@@ -328,14 +328,15 @@ void ledInit() {
 }
 
 // ฟังก์ชันสั่งให้ LED ติด
+// ⚠️ LED บน ESP32 C3 Super Mini เป็น Active LOW — เขียน LOW ถึงจะติด!
 void ledOn() {
-  digitalWrite(LED_PIN, HIGH);
+  digitalWrite(LED_PIN, LOW);
   Serial.println("[LED] ON 🔆");
 }
 
 // ฟังก์ชันสั่งให้ LED ดับ
 void ledOff() {
-  digitalWrite(LED_PIN, LOW);
+  digitalWrite(LED_PIN, HIGH);
   Serial.println("[LED] OFF 💤");
 }
 

@@ -329,8 +329,8 @@ Channel -    | 0x101    | 0x01    | 0x20DF40BF
     │  3V3  ──┬──► IR Receiver VCC            │
     │  GND  ──┴──► IR Receiver GND            │
     │  GPIO5 ──────► IR Receiver OUT          │
-    │  GPIO6 ──────► LED1 เขียว (ผ่าน R220Ω)   │
-    │  GPIO7 ──────► LED2 แดง (ผ่าน R220Ω)    │
+    │  GPIO18 ─────► LED1 เขียว (ผ่าน R220Ω)   │
+    │  GPIO19 ─────► LED2 แดง (ผ่าน R220Ω)    │
     └────────────────────────────────────────┘
 ```
 
@@ -349,8 +349,8 @@ Channel -    | 0x101    | 0x01    | 0x20DF40BF
 
 // ==== กำหนดขา ====
 #define IR_PIN        5   // IR Receiver OUT → GPIO 5
-#define LED_GREEN_PIN 6   // LED เขียว → GPIO 6
-#define LED_RED_PIN   7   // LED แดง → GPIO 7
+#define LED_GREEN_PIN 18  // LED เขียว → GPIO 18
+#define LED_RED_PIN   19  // LED แดง → GPIO 19
 
 // ==== กำหนดค่า Hex ของรีโมท (แก้ตามค่าจริงที่ถอดรหัสได้!) ====
 // ค่าตัวอย่างจากรีโมททีวี (เปลี่ยนตามรีโมทจริงที่ใช้)
@@ -468,9 +468,9 @@ void loop() {
     │  GND  ──┴──► IR Receiver GND                         │
     │  GPIO5 ──────► IR Receiver OUT                       │
     │  GPIO0 ──────► DHT11 DATA                            │
-    │  GPIO2 ──────► Servo Signal                          │
-    │  GPIO6 ──────► LED เขียว (ผ่าน R 220Ω)                │
-    │  GPIO7 ──────► LED แดง (ผ่าน R 220Ω)                  │
+    │  GPIO10 ─────► Servo Signal                          │
+    │  GPIO18 ─────► LED เขียว (ผ่าน R 220Ω)                │
+    │  GPIO19 ─────► LED แดง (ผ่าน R 220Ω)                  │
     └─────────────────────────────────────────────────────┘
 ```
 
@@ -500,9 +500,9 @@ void loop() {
 
 // ==== กำหนดขา ====
 #define IR_PIN        5
-#define LED_GREEN_PIN 6
-#define LED_RED_PIN   7
-#define SERVO_PIN     2
+#define LED_GREEN_PIN 18  // LED เขียว → GPIO 18
+#define LED_RED_PIN   19  // LED แดง → GPIO 19
+#define SERVO_PIN     10  // Servo → GPIO 10 (GPIO 2 เป็น Strapping Pin)
 #define DHT_PIN       0
 
 // ==== กำหนดค่า Hex ของรีโมท (เปลี่ยนตามรีโมทจริง!) ====

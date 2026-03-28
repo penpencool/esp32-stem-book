@@ -692,7 +692,7 @@ Prompt สำหรับ AI:
 ```
 Prompt สำหรับ AI:
 "ช่วยสร้างโค้ด PlatformIO สำหรับ ESP32-C3 ที่แสดงผลอุณหภูมิและความชื้น
-บนจอ OLED 0.96 I2C (SDA=GPIO1, SCL=GPIO0) 
+บนจอ OLED 0.96 I2C (SDA=GPIO8, SCL=GPIO9) 
 พร้อมแสดง icon อารมณ์ตามระดับความสบาย"
 ```
 

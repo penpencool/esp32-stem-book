@@ -226,8 +226,8 @@ HC-SR04 มี 4 ขา:
     ┌─────────┐              ┌──────────┐
     │      GND├──────────────│○ GND     │
     │  3V3    ├──────────────│○ VCC (5V)│
-    │ GPIO4  ├───────────────│○ Trig    │
-    │ GPIO5◄─┤◄── Voltage ───│○ Echo    │
+    │ GPIO3  ├───────────────│○ Trig    │
+    │ GPIO10◄─┤◄── Voltage ───│○ Echo    │
     │        │    Divider    │          │
     └─────────┘              └──────────┘
 
@@ -242,8 +242,8 @@ HC-SR04 มี 4 ขา:
 |--------|--------------------|
 | VCC | 5V Power Supply |
 | GND | GND ร่วม |
-| Trig | GPIO 4 |
-| Echo | → Voltage Divider (R1 1kΩ) → GPIO 5 |
+| Trig | GPIO 3 |
+| Echo | → Voltage Divider (R1 1kΩ) → GPIO 10 |
 | Echo | → Voltage Divider (R2 2kΩ) → GND |
 
 ---
@@ -261,8 +261,8 @@ HC-SR04 มี 4 ขา:
     ┌─────────┐              ┌──────────┐
     │      GND├──────────────│○ GND     │
     │  5V    ├──────────────│○ VCC     │
-    │  GPIO4 ├──────────────│○ Trig    │
-    │  GPIO5◄─┤◄── R1+R2 ───│○ Echo    │
+    │  GPIO3 ├──────────────│○ Trig    │
+    │  GPIO10◄─┤◄── R1+R2 ───│○ Echo    │
     └─────────┘              └──────────┘
 
     ESP32-C3                    OLED (SSD1306)
@@ -274,7 +274,7 @@ HC-SR04 มี 4 ขา:
     └─────────┘              └──────────┘
 
     Voltage Divider สำหรับ Echo:
-    HC-SR04 Echo ──┤1kΩ├──┬──► ESP32 GPIO5
+    HC-SR04 Echo ──┤1kΩ├──┬──► ESP32 GPIO10
                           │
                           └──┤2kΩ├──► GND
 ```
@@ -311,8 +311,8 @@ HC-SR04 มี 4 ขา:
 #include <Adafruit_SSD1306.h>
 
 // ==== กำหนดขา ====
-#define TRIG_PIN   4   // HC-SR04 Trig → GPIO 4
-#define ECHO_PIN   5   // HC-SR04 Echo → GPIO 5 (ผ่าน Voltage Divider)
+#define TRIG_PIN   3   // HC-SR04 Trig → GPIO 3
+#define ECHO_PIN   10  // HC-SR04 Echo → GPIO 10 (ผ่าน Voltage Divider)
 
 // ==== กำหนดขนาด OLED ====
 #define SCREEN_WIDTH  128  // จำนวนพิกเซลแนวกว้าง
@@ -433,15 +433,15 @@ void loop() {
     ┌─────────┐              ┌──────────┐
     │      GND├──────────────│○ GND     │
     │  5V    ├──────────────│○ VCC     │
-    │  GPIO4 ├──────────────│○ Trig    │
-    │  GPIO5◄─┤◄── R1+R2 ───│○ Echo    │
+    │  GPIO3 ├──────────────│○ Trig    │
+    │  GPIO10◄─┤◄── R1+R2 ───│○ Echo    │
     └─────────┘              └──────────┘
 
     LED (ผ่าน R 220Ω แต่ละตัว):
     GPIO 18 ──── R220Ω ──── LED เขียว ──── GND
     GPIO 19 ──── R220Ω ──── LED เหลือง ──── GND
-    GPIO 2  ──── R220Ω ──── LED ส้ม ──── GND
-    GPIO 3  ──── R220Ω ──── LED แดง ──── GND
+    GPIO 10 ──── R220Ω ──── LED ส้ม ──── GND
+    GPIO 20 ──── R220Ω ──── LED แดง ──── GND
 
     Buzzer (Active):
     GPIO 21 ──────────────► (+) Buzzer (-) ──── GND
@@ -451,12 +451,12 @@ void loop() {
 
 | อุปกรณ์ | GPIO |
 |--------|------|
-| HC-SR04 Trig | 4 |
-| HC-SR04 Echo (ผ่าน Voltage Divider) | 5 |
-| LED เขียว | 6 |
-| LED เหลือง | 7 |
-| LED ส้ม | 8 |
-| LED แดง | 9 |
+| HC-SR04 Trig | 3 |
+| HC-SR04 Echo (ผ่าน Voltage Divider) | 10 |
+| LED เขียว | 18 |
+| LED เหลือง | 19 |
+| LED ส้ม | 10 |
+| LED แดง | 20 |
 | Buzzer | 21 |
 
 #### ขั้นตอนที่ 2: เขียนโค้ด
@@ -471,15 +471,15 @@ void loop() {
 #include <Arduino.h>
 
 // ==== กำหนดขา ====
-#define TRIG_PIN   4   // HC-SR04 Trig
-#define ECHO_PIN   5   // HC-SR04 Echo
+#define TRIG_PIN   3   // HC-SR04 Trig
+#define ECHO_PIN   10  // HC-SR04 Echo
 
 // ⚠️ หมายเหตุ: GPIO 6-11 บน ESP32-C3 อยู่ใกล้ SPI Flash ภายใน
-// ควรเลี่ยงใช้ GPIO เหล่านั้น ใช้ GPIO ที่ปลอดภัยกว่า เช่น GPIO 2, 3, 4, 5, 18, 19, 20, 21
+// ควรเลี่ยงใช้ GPIO เหล่านั้น ใช้ GPIO ที่ปลอดภัยกว่า เช่น GPIO 0, 1, 3, 10, 18, 19, 20, 21
 #define LED_GREEN  18   // LED เขียว (ปลอดภัย)
 #define LED_YELLOW 19   // LED เหลือง (เตือน)
-#define LED_ORANGE 2    // LED ส้ม (ใกล้)
-#define LED_RED    3    // LED แดง (อันตราย)
+#define LED_ORANGE 10   // LED ส้ม (ใกล้)
+#define LED_RED    20   // LED แดง (อันตราย)
 #define BUZZER_PIN 21  // Buzzer ← ✅ ปลอดภัย
 
 // ==== ค่าตั้งต้น ====

@@ -334,7 +334,7 @@ void loop() {
 ฉันเป็นเด็กมัธยมต้น อธิบายว่าโค้ดนี้ทำงานยังไง 
 โดยใช้ภาษาง่ายๆ และยกตัวอย่างประกอบด้วย:
 
-#define LED_PIN 2
+#define LED_PIN 8  // LED บิลต์อินของ ESP32 C3 Super Mini อยู่ที่ GPIO 8
 
 void setup() {
   Serial.begin(115200);
@@ -342,10 +342,10 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(LED_PIN, HIGH);
+  digitalWrite(LED_PIN, LOW);  // Active LOW: เขียน LOW ให้ LED ติด
   Serial.println("LED is ON!");
   delay(500);
-  digitalWrite(LED_PIN, LOW);
+  digitalWrite(LED_PIN, HIGH);  // เขียน HIGH ให้ LED ดับ
   Serial.println("LED is OFF!");
   delay(500);
 }
