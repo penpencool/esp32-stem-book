@@ -1,0 +1,78 @@
+{
+  "chapter": 1,
+  "total_slides": 10,
+  "slides": [
+    {
+      "slide": 1,
+      "title": "บทที่ 1: AI คืออะไร?",
+      "script": "สวัสดีครับ ยินดีต้อนรับสู่บทเรียนแรกของหนังสือ ESP32-C3 STEM AI Coding วันนี้เราจะมาเรียนรู้เรื่อง AI หรือปัญญาประดิษฐ์ ว่ามันคืออะไร และทำไมนักเขียนโค้ดอย่างเราควรรู้จักมัน",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_01.mp3",
+      "duration_sec": 18.4
+    },
+    {
+      "slide": 2,
+      "title": "AI คืออะไร?",
+      "script": "AI หรือ Artificial Intelligence คือระบบคอมพิวเตอร์ที่ถูกออกแบบมาให้เรียนรู้ เข้าใจ และตัดสินใจได้เหมือนมนุษย์ ลองนึกภาพว่ามันเหมือนเพื่อนฉลาดที่รู้เรื่องเยอะมาก และช่วยเราได้ตลอด 24 ชั่วโมง",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_02.mp3",
+      "duration_sec": 17.6
+    },
+    {
+      "slide": 3,
+      "title": "AI อยู่รอบตัวเราแล้ว",
+      "script": "รู้มั้ยว่าเราเจอ AI ในชีวิตประจำวันแทบทุกวัน เมื่อเราถาม Google ว่าอากาศเป็นยังไง เมื่อดู YouTube แล้วเห็นคำแนะนำวิดีโอที่ชอบ เมื่อถ่ายรูปแล้วมือถือตรวจจับใบหน้า ล้วนมี AI ช่วยทั้งนั้น",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_03.mp3",
+      "duration_sec": 20.0
+    },
+    {
+      "slide": 4,
+      "title": "Generative AI",
+      "script": "AI ที่เราจะใช้กันเรียกว่า Generative AI หรือ AI ที่สร้างงานได้ มันไม่ได้แค่ตอบคำถาม แต่ยังเขียนข้อความ เขียนโค้ด วาดรูป และอธิบายเรื่องยากให้เข้าใจง่ายได้",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_04.mp3",
+      "duration_sec": 16.1
+    },
+    {
+      "slide": 5,
+      "title": "ChatGPT - ผู้ช่วย AI",
+      "script": "ChatGPT พัฒนาโดย OpenAI เป็น AI ที่เราสามารถสนทนาด้วยได้ คล้ายกับการแชทกับเพื่อน แต่เพื่อนนี้รู้เรื่องเยอะมากและตอบได้ตลอด 24 ชั่วโมง สามารถตอบคำถาม เขียนบทความ และช่วยเขียนโค้ดได้",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_05.mp3",
+      "duration_sec": 16.4
+    },
+    {
+      "slide": 6,
+      "title": "GitHub Copilot",
+      "script": "GitHub Copilot เป็น AI ที่ออกแบบมาเพื่อช่วยเขียนโค้ดโดยเฉพาะ มันจะเติมโค้ดให้เราอัตโนมัติขณะที่เรากำลังเขียน ช่วยเพิ่มความเร็วในการเขียนโปรแกรมได้มาก",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_06.mp3",
+      "duration_sec": 13.2
+    },
+    {
+      "slide": 7,
+      "title": "Prompt Engineering",
+      "script": "Prompt คือคำถามหรือคำสั่งที่เราพิมพ์ให้ AI การเขียน Prompt ที่ดีจะช่วยให้ได้คำตอบที่ตรงใจมากขึ้น หลักการสำคัญคือ บอกให้ชัดว่าต้องการอะไร บอกบริบท และบอกรูปแบบที่ต้องการ",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_07.mp3",
+      "duration_sec": 15.6
+    },
+    {
+      "slide": 8,
+      "title": "ตัวอย่าง Prompt ที่ดี",
+      "script": "ตัวอย่าง Prompt ที่ไม่ดีคือ ช่วยโค้ดหน่อย ส่วน Prompt ที่ดีคือ ช่วยเขียนโค้ด Arduino สำหรับ ESP32-C3 ให้ LED ต่อที่ GPIO 8 กระพริบเปิด-ปิดทุก 1 วินาที พร้อมอธิบายแต่ละบรรทัดเป็นภาษาไทย",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_08.mp3",
+      "duration_sec": 18.4
+    },
+    {
+      "slide": 9,
+      "title": "จริยธรรมในการใช้ AI",
+      "script": "AI มีข้อจำกัด อย่าไว้ใจมากเกินไป AI อาจโกหกได้ เรียกว่า hallucination AI อาจให้ข้อมูลเก่า และอาจเขียนโค้ดผิดได้ ดังนั้นต้องตรวจสอบทุกครั้ง ใช้ AI เป็นผู้ช่วยไม่ใช่ผู้แทน และไม่ใช้ AI ในทางที่ผิด",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_09.mp3",
+      "duration_sec": 17.9
+    },
+    {
+      "slide": 10,
+      "title": "สรุปบทเรียน",
+      "script": "สรุปวันนี้เราได้เรียนรู้ว่า AI คือปัญญาประดิษฐ์ที่ช่วยเราได้หลายอย่าง ChatGPT และ GitHub Copilot เป็นเครื่องมือที่จะช่วยในการเขียนโค้ด Prompt Engineering สำคัญมากในการได้คำตอบที่ดี และอย่าลืมใช้ AI อย่างมีความรับผิดชอบ บทต่อไปเราจะมาติดตั้งเครื่องมือเขียนโค้ดกัน",
+      "audio_file": "/home/maxtic/esp32-stem-book/chapter01/audio/slide_10.mp3",
+      "duration_sec": 24.2
+    }
+  ],
+  "total_duration_sec": 177.79999999999998,
+  "total_duration_formatted": "2:57"
+}
